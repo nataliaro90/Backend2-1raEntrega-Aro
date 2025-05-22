@@ -1,0 +1,20 @@
+<h1>Detalle del Carrito: {{cart._id}}</h1>
+
+{{#if products.length}}
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
+        {{#each products}}
+            <div style="border: 1px solid #ccc; padding: 15px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);">
+                <h2>{{this.product.title}}</h2>
+                <p><strong>Cantidad:</strong> {{this.quantity}}</p>
+                <p><strong>Precio Unitario:</strong> ${{this.product.price}}</p>
+                <p><strong>Subtotal:</strong> ${{this.subtotal}}</p>
+                <p><strong>Código Producto:</strong> {{this.product.code}}</p>
+            </div>
+        {{/each}}
+    </div>
+    <h3 style="margin-top: 20px;">Total del Carrito: ${{totalCartPrice}}</h3>
+{{else}}
+    <p>Este carrito está vacío.</p>
+{{/if}}
+
+<p><a href="/">Volver a la lista de productos</a></p>

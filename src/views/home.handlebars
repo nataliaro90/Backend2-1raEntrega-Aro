@@ -1,0 +1,79 @@
+<div class="container">
+    <h1>Lista de Productos</h1>
+
+    <div class="product-grid">
+        {{#if products}}
+            {{#each products}}
+                <div class="product-item">
+                    <h2>{{this.title}}</h2>
+                    <p><strong>Descripción:</strong> {{this.description}}</p>
+                    <p><strong>Precio:</strong> ${{this.price}}</p>
+                    <p><strong>Código:</strong> {{this.code}}</p>
+                    <p><strong>Stock:</strong> {{this.stock}}</p>
+                    <p><strong>Categoría:</strong> {{this.category}}</p>
+                    <p><strong>Estado:</strong> {{#if this.status}}Disponible{{else}}No disponible{{/if}}</p>
+                    {{#if this.thumbnails}}
+                        <p><strong>Imágenes:</strong></p>
+                        {{#each this.thumbnails}}
+                            <img src="{{this}}" alt="Imagen del Producto">
+                        {{/each}}
+                    {{else}}
+                        <p><strong>Imágenes:</strong> No tiene</p>
+                    {{/if}}
+                    <button class="add-to-cart-button" data-product-id="{{this._id}}">Agregar al Carrito</button>
+                </div>
+            {{/each}}
+        {{else}}
+            <p>No hay productos disponibles en este momento.</p>
+        {{/if}}
+    </div>
+
+    <div class="pagination-controls">
+        {{#if hasPrevPage}}
+            <a href="{{prevLink}}">Anterior</a>
+        {{/if}}
+        <span>Página {{page}} de {{totalPages}}</span>
+        {{#if hasNextPage}}
+            <a href="{{nextLink}}">Siguiente</a>
+        {{/if}}
+    </div>
+</div>
+
+
+<script src="/js/main.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const cartId = '682f7056150a980890e17591';
+
+        const addToCartButtons = document.querySelectorAll('.add-to-cart-button');
+
+        addToCartButtons.forEach(button => {
+            button.addEventListener('click', async (event) => {
+                const productId = event.target.dataset.productId;
+
+                try {
+                    const response = await fetch(`/api/carts/${cartId}/products/${productId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ quantity: 1 })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        alert('Producto agregado al carrito exitosamente!');
+                        console.log('Producto agregado:', data);
+                    } else {
+                        alert(`Error al agregar producto: ${data.message || 'Error desconocido'}`);
+                        console.error('Error al agregar producto:', data);
+                    }
+                } catch (error) {
+                    console.error('Error de red al agregar producto:', error);
+                    alert('Error de conexión al servidor al agregar producto.');
+                }
+            });
+        });
+    });
+</script>

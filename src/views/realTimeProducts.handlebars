@@ -1,0 +1,68 @@
+<h1>Productos en Tiempo Real</h1>
+
+<div id="product-list-container">
+    {{#if products}}
+        <div id="initial-products-display" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
+            {{#each products}}
+                <div class="product-item" style="border: 1px solid #ccc; padding: 15px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);">
+                    <h2>{{this.title}}</h2>
+                    <p><strong>Descripción:</strong> {{this.description}}</p>
+                    <p><strong>Precio:</strong> ${{this.price}}</p>
+                    <p><strong>Código:</strong> {{this.code}}</p>
+                    <p><strong>Stock:</strong> {{this.stock}}</p>
+                    <p><strong>Categoría:</strong> {{this.category}}</p>
+                    <p><strong>Estado:</strong> {{#if this.status}}Disponible{{else}}No disponible{{/if}}</p>
+                    {{#if this.thumbnails}}
+                        <div>
+                            <strong>Imágenes:</strong>
+                            <ul style="list-style: none; padding: 0;">
+                                {{#each this.thumbnails}}
+                                    <li><img src="{{this}}" alt="Producto" style="width: 100px; height: auto; margin-right: 5px;"></li>
+                                {{/each}}
+                            </ul>
+                        </div>
+                    {{/if}}
+                    <button class="delete-button" data-id="{{this._id}}">Eliminar</button>
+                </div>
+            {{/each}}
+        </div>
+        <div id="dynamic-products-display"></div>
+    {{else}}
+        <p>No hay productos disponibles en tiempo real. Agrega algunos.</p>
+        <div id="dynamic-products-display"></div>
+    {{/if}}
+</div>
+
+<hr>
+<h3>Agregar Nuevo Producto:</h3>
+<form id="new-product-form">
+    <label for="title">Título:</label><br>
+    <input type="text" id="title" name="title" required><br>
+
+    <label for="description">Descripción:</label><br>
+    <textarea id="description" name="description" required></textarea><br>
+
+    <label for="price">Precio:</label><br>
+    <input type="number" id="price" name="price" step="0.01" required><br>
+
+    <label for="code">Código:</label><br>
+    <input type="text" id="code" name="code" required><br>
+
+    <label for="stock">Stock:</label><br>
+    <input type="number" id="stock" name="stock" required><br>
+
+    <label for="category">Categoría:</label><br>
+    <input type="text" id="category" name="category" required><br>
+
+    <label for="thumbnails">Thumbnails (URLs separadas por comas):</label><br>
+    <input type="text" id="thumbnails" name="thumbnails"><br>
+
+    <label for="status">Disponible:</label>
+    <input type="checkbox" id="status" name="status" checked><br><br>
+
+    <button type="submit">Agregar Producto</button>
+</form>
+<hr>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/main.js"></script>

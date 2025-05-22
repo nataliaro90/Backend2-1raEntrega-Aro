@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}} - Mi Tienda</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Mi Tienda (MongoDB)</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Inicio (Todos los productos)</a></li>
+                <li><a href="/realtimeproducts">Productos en Tiempo Real</a></li>
+                <li><a href="/api/products">API Productos</a></li>
+                <li><a href="/api/carts">API Carritos</a></li>
+                <li><a href="/carts/682f7056150a980890e17591">Mi Carrito de Prueba</a></li>
+        </nav>
+    </header>
+
+    <main>
+        {{{body}}}
+    </main>
+
+    <footer>
+        <p>&copy; {{currentYear}} Entrega Final Backend.</p>
+    </footer>
+    <script src="/socket.io/socket.io.js"></script>  <script>
+        document.querySelector('footer p').textContent = document.querySelector('footer p').textContent.replace('{{currentYear}}', new Date().getFullYear());
+    </script>
+</body>
+</html>
