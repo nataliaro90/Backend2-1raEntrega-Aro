@@ -5,18 +5,25 @@ const { Server } = require('socket.io');
 const exphbs = require('express-handlebars');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
+const passport = require('passport');
+const flash = require('connect-flash');
+const initializePassport = require('./config/passport.config');
+
+require('dotenv').config();
 
 const productsRouter = require('./routes/products.router');
 const cartsRouter = require('./routes/carts.router');
 const viewsRouter = require('./routes/views.router');
+const sessionsRouter = require('./routes/sessions.router');
 
 const productDao = require('./dao/ProductDao');
 
 
 const app = express();
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 
-const MONGODB_URI = 'mongodb+srv://naty87019:1905Cabj@cluster0.7kfiwqs.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0';
+const MONGODB_URI = process.env.MONGODB_URI;
 
 mongoose.connect(MONGODB_URI)
     .then(() => console.log('🚀 Conectado a MongoDB'))
@@ -28,31 +35,56 @@ const io = new Server(httpServer);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.use(session({
-    secret: 'tuSecretKeySuperSecreta',
+    secret: process.env.SESSION_SECRET, //
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false }
+    store: MongoStore.create({
+        mongoUrl: MONGODB_URI,
+        ttl: 60 * 60 * 24 //
+    }),
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 1000 * 60 * 60 * 24
+    }
 }));
 
+initializePassport();
+app.use(passport.initialize());
+app.use(passport.session());
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(flash());
+
+app.use((req, res, next) => {
+    res.locals.errorMessage = req.flash('error');
+    res.locals.successMessage = req.flash('success');
+    next();
+});
+
+app.use(express.static(path.join(__dirname, './public')));
 
 
 app.engine('handlebars', exphbs.engine({
     defaultLayout: 'main',
     layoutsDir: path.join(__dirname, 'views/layouts'),
+    partialsDir: path.join(__dirname, 'views/partials'),
     helpers: {
-        multiply: (a, b) => a * b
+        multiply: (a, b) => a * b,
+        isLoggedIn: function(user, options) {
+            if (user && user.id) {
+                return options.fn(this);
+            }
+            return options.inverse(this);
+        }
     }
 }));
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
+
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
-
+app.use('/api/sessions', sessionsRouter);
 app.use('/', viewsRouter);
 
 io.on('connection', (socket) => {

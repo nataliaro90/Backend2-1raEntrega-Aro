@@ -1,0 +1,18 @@
+<h2>Mi Perfil</h2>
+
+{{#if user}}
+    <p><strong>Nombre:</strong> {{user.first_name}}</p>
+    <p><strong>Apellido:</strong> {{user.last_name}}</p>
+    <p><strong>Correo Electrónico:</strong> {{user.email}}</p>
+    <p><strong>Edad:</strong> {{user.age}}</p>
+    <p><strong>Rol:</strong> {{user.role}}</p>
+    {{#if user.cart}}
+        <p><strong>ID del Carrito:</strong> {{user.cart}}</p>
+        <p><a href="/carts/{{user.cart}}">Ver mi Carrito</a></p>
+    {{else}}
+        <p>No tienes un carrito asociado.</p>
+    {{/if}}
+    <p><a href="/logout">Cerrar Sesión</a></p>
+{{else}}
+    <p>No hay usuario logueado. Por favor, <a href="/login">inicia sesión</a>.</p>
+{{/if}}

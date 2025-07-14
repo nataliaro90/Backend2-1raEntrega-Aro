@@ -107,10 +107,7 @@ class ProductDao {
     async deleteProduct(id) {
         try {
             const result = await Product.findByIdAndDelete(id);
-            if (!result) {
-                return false;
-            }
-            return true;
+            return !!result;
         } catch (error) {
             console.error(`Error al eliminar producto ${id}:`, error);
             throw error;
@@ -118,4 +115,4 @@ class ProductDao {
     }
 }
 
-module.exports = new ProductDao();
+module.exports = ProductDao;
