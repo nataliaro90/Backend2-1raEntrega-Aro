@@ -2,7 +2,6 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const JWTStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
-const bcrypt = require('bcryptjs');
 const UserDao = require('../dao/UserDao');
 const CartDao = require('../dao/CartDao');
 
@@ -27,13 +26,12 @@ const initializePassport = () => {
                 return done(null, false, { message: 'Error al crear el carrito' });
             }
 
-            const hashedPassword = await bcrypt.hash(password, 10);
             const newUser = {
                 first_name: req.body.first_name,
                 last_name: req.body.last_name,
                 age: req.body.age,
                 email: email,
-                password: hashedPassword,
+                password: password,
                 role: 'user',
                 cart: newCart._id
             };
@@ -57,7 +55,7 @@ const initializePassport = () => {
                 return done(null, false, { message: 'Usuario no encontrado' });
             }
 
-            const isValidPassword = await bcrypt.compare(password, user.password);
+            const isValidPassword = await user.comparePassword(password);
             if (!isValidPassword) {
                 console.log('Credenciales inválidas');
                 return done(null, false, { message: 'Credenciales inválidas' });
@@ -85,7 +83,6 @@ const initializePassport = () => {
             return done(error, false);
         }
     }));
-
 
     passport.serializeUser((user, done) => {
         done(null, user._id);
